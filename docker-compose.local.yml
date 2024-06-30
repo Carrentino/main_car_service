@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:16
+    container_name: car-service-db
+    env_file:
+      - .env
+    ports:
+      - "5440:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  redis:
+    image: redis:latest
+    container_name: car-service-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
+  car-service-main:
+    build: .
+    container_name: car-service-main
+    depends_on:
+      - db
+      - redis
+    env_file:
+      - .env
+    ports:
+      - "${APP_PORT}:8000"
+
+volumes:
+  postgres_data:
+  redis_data:
